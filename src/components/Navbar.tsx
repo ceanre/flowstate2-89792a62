@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Menu, X, User, LogOut } from "lucide-react";
+import { Search, Menu, X, LogOut, Shield, User, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { user, signInWithGoogle, logout } = useAuth();
+  const { user, profile, signInWithGoogle, logout, isAdmin } = useAuth();
   const location = useLocation();
 
   const navLinks = [
@@ -56,12 +57,44 @@ const Navbar = () => {
           </button>
 
           {user ? (
-            <div className="flex items-center gap-2">
-              <img
-                src={user.photoURL || ""}
-                alt=""
-                className="w-8 h-8 rounded-full border border-border"
-              />
+            <div className="flex items-center gap-1">
+              {/* Notifications */}
+              <button className="p-2 text-muted-foreground hover:text-foreground transition-colors relative">
+                <Bell className="w-5 h-5" />
+              </button>
+
+              {/* Admin Link */}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="p-2 text-muted-foreground hover:text-primary transition-colors hidden md:block"
+                >
+                  <Shield className="w-5 h-5" />
+                </Link>
+              )}
+
+              {/* Profile */}
+              <Link
+                to={profile ? `/profile/${profile.username}` : "#"}
+                className="flex items-center gap-2 ml-1"
+              >
+                <div className="w-8 h-8 rounded-full bg-muted overflow-hidden border border-border">
+                  {(profile?.photoURL || user.photoURL) && (
+                    <img
+                      src={profile?.photoURL || user.photoURL || ""}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                {profile && (
+                  <span className="hidden md:flex items-center gap-1 text-sm font-body font-medium text-foreground">
+                    @{profile.username}
+                    {profile.verified && <VerifiedBadge />}
+                  </span>
+                )}
+              </Link>
+
               <button
                 onClick={logout}
                 className="p-2 text-muted-foreground hover:text-foreground transition-colors hidden md:block"
@@ -130,9 +163,30 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="px-3 py-3 text-sm font-bold uppercase tracking-wider text-primary flex items-center gap-2"
+                >
+                  <Shield className="w-4 h-4" /> Admin
+                </Link>
+              )}
+              {user && profile && (
+                <Link
+                  to={`/profile/${profile.username}`}
+                  onClick={() => setMenuOpen(false)}
+                  className="px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  <User className="w-4 h-4" /> Profile
+                </Link>
+              )}
               {user && (
                 <button
-                  onClick={() => { logout(); setMenuOpen(false); }}
+                  onClick={() => {
+                    logout();
+                    setMenuOpen(false);
+                  }}
                   className="px-3 py-3 text-sm font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground text-left flex items-center gap-2"
                 >
                   <LogOut className="w-4 h-4" /> Sign Out

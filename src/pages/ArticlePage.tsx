@@ -1,11 +1,13 @@
 import { useParams, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import ArticleCard from "@/components/ArticleCard";
+import CommentSection from "@/components/CommentSection";
+import PollComponent from "@/components/PollComponent";
 import { Badge } from "@/components/ui/badge";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { mockArticles, getTagColor } from "@/lib/mock-data";
 import {
   Heart,
-  MessageCircle,
   Eye,
   Share2,
   ArrowLeft,
@@ -47,6 +49,8 @@ const ArticlePage = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const isOpinion = article.tags.includes("OPINION");
+
   return (
     <Layout>
       {/* Hero */}
@@ -87,12 +91,10 @@ const ArticlePage = () => {
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-full bg-muted" />
               <div>
-                <span className="text-sm font-semibold text-foreground font-body">
+                <span className="text-sm font-semibold text-foreground font-body inline-flex items-center gap-1">
                   {article.author.name}
+                  {article.author.verified && <VerifiedBadge />}
                 </span>
-                {article.author.verified && (
-                  <span className="text-primary ml-1 text-xs">✓</span>
-                )}
                 <p className="text-xs text-muted-foreground font-body">
                   @{article.author.username}
                 </p>
@@ -120,12 +122,10 @@ const ArticlePage = () => {
       {/* Article Body */}
       <section className="container mx-auto px-4 py-10">
         <div className="max-w-3xl mx-auto">
-          {/* Content */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="prose-invert"
           >
             {article.content.split("\n\n").map((paragraph, i) => (
               <p
@@ -136,6 +136,11 @@ const ArticlePage = () => {
               </p>
             ))}
           </motion.div>
+
+          {/* Poll for Opinion Articles */}
+          {isOpinion && article.poll?.enabled && (
+            <PollComponent articleId={article.id} poll={article.poll} />
+          )}
 
           {/* Engagement Bar */}
           <div className="flex items-center justify-between border-y border-border py-4 my-10">
@@ -154,10 +159,6 @@ const ArticlePage = () => {
               </button>
               <button className="flex items-center gap-2 text-sm font-body font-medium text-muted-foreground hover:text-foreground transition-colors">
                 <ThumbsDown className="w-4 h-4" />
-              </button>
-              <button className="flex items-center gap-2 text-sm font-body font-medium text-muted-foreground hover:text-foreground transition-colors">
-                <MessageCircle className="w-5 h-5" />
-                {article.comments}
               </button>
             </div>
             <div className="flex items-center gap-2">
@@ -178,14 +179,9 @@ const ArticlePage = () => {
             </div>
           </div>
 
-          {/* Comments Section Placeholder */}
+          {/* Comments */}
           <div className="mb-16">
-            <h3 className="font-display text-2xl text-foreground mb-6">Comments</h3>
-            <div className="bg-secondary p-6 text-center">
-              <p className="text-muted-foreground font-body text-sm">
-                Sign in to join the conversation
-              </p>
-            </div>
+            <CommentSection articleId={article.id} />
           </div>
         </div>
       </section>
