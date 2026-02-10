@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import FeaturedHero from "@/components/FeaturedHero";
 import ArticleCard from "@/components/ArticleCard";
@@ -8,7 +9,13 @@ import { TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Index = () => {
-  const [activeTag, setActiveTag] = useState("ALL");
+  const { tag } = useParams();
+  const [activeTag, setActiveTag] = useState(tag?.toUpperCase() || "ALL");
+
+  useEffect(() => {
+    if (tag) setActiveTag(tag.toUpperCase());
+    else setActiveTag("ALL");
+  }, [tag]);
 
   const featuredArticle = mockArticles.find((a) => a.featured);
   const regularArticles = mockArticles.filter((a) => !a.featured);

@@ -103,7 +103,7 @@ const FeaturedHero = ({ article }: FeaturedHeroProps) => {
                   <Heart className="w-3.5 h-3.5" /> {article.likes.toLocaleString()}
                 </span>
                 <span className="flex items-center gap-1">
-                  <MessageCircle className="w-3.5 h-3.5" /> {article.comments}
+                  <MessageCircle className="w-3.5 h-3.5" /> {article.commentCount}
                 </span>
               </div>
 

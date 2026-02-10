@@ -67,7 +67,7 @@ const ArticleCard = ({ article, variant = "default" }: ArticleCardProps) => {
               <Heart className="w-3 h-3" /> {article.likes.toLocaleString()}
             </span>
             <span className="flex items-center gap-1">
-              <MessageCircle className="w-3 h-3" /> {article.comments}
+              <MessageCircle className="w-3 h-3" /> {article.commentCount}
             </span>
           </div>
         </div>
